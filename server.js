@@ -5,20 +5,16 @@ import dotenv from 'dotenv';
 import process from 'process';
 import { Buffer } from 'buffer';
 
-dotenv.config();
+dotenv.config({ path: './keys.config' });
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const EMAIL = 'mackaman29@gmail.com'
-const JIRA_API_URL = 'https://joshmackus.atlassian.net/rest/api/3';
-const AUTH_TOKEN = 'ATATT3xFfGF0enRSZnwIYbr65uuN84WPzPhIuSLRwpd1qUIFhabEAspfzIh9HDbIxu2EG-Fs8yKgkjha8vlxVJL2fNMXGZRlrQoH5NkOD1sI071DXTN-PwcVeUOJkEcCGE4zPai9B6GxwbWrGM97A5qWxHruPv17fti2wbI-nLAbHi4jc0XpmBU=6F71711D'; // Replace with your token
-
-const authHeader = `Basic ${Buffer.from(`${EMAIL}:${AUTH_TOKEN}`).toString('base64')}`;
+const authHeader = `Basic ${Buffer.from(`${process.env.EMAIL}:${process.env.AUTH_TOKEN}`).toString('base64')}`;
 
 app.get('/api/projects', async (req, res) => {
     try {
-        const response = await axios.get(`${JIRA_API_URL}/project/search`, {
+        const response = await axios.get(`${process.env.JIRA_API_URL}/project/search`, {
             headers: {
                 'Authorization': authHeader,
                 'Content-Type': 'application/json'
@@ -42,7 +38,7 @@ app.get('/api/epics/:projectId', async (req, res) => {
     const { projectId } = req.params;
     console.log("projectId: ", projectId);
     try {
-        const response = await axios.get(`${JIRA_API_URL}/search?jql=project=${projectId} AND issuetype=Epic`, {
+        const response = await axios.get(`${process.env.JIRA_API_URL}/search?jql=project=${projectId} AND issuetype=Epic`, {
             headers: {
                 'Authorization': authHeader,
                 'Content-Type': 'application/json'
@@ -71,9 +67,9 @@ app.post('/api/create-story', async (req, res) => {
                 }
             };
 
-            return await axios.post(`${JIRA_API_URL}/issue`, issueData, {
+            return await axios.post(`${process.env.JIRA_API_URL}/issue`, issueData, {
                 headers: {
-                    'Authorization': `Basic ${AUTH_TOKEN}`,
+                    'Authorization': authHeader,
                     'Content-Type': 'application/json'
                 }
             });

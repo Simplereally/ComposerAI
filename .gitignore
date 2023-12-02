@@ -62,3 +62,4 @@ yarn-error.log*
 package-lock.json
 response.json
 response.txt
+keys.config
